@@ -72,9 +72,9 @@
           touch $out
         '';
 
-      lint = with pkgs;
+      npm = with pkgs;
         buildNpmPackage {
-          pname = "check-lint";
+          pname = "check-npm";
           inherit version;
           src = ./.;
           npmDepsHash = "sha256-m0tMCJevjnfi2D+bBm0Beai9Mne543tpVVJ7wo+Afo4=";
@@ -87,35 +87,6 @@
             touch $out
           '';
         };
-    });
-
-    apps = forSystem ({pkgs, ...}: {
-      update = {
-        type = "app";
-        program = pkgs.lib.getExe (pkgs.writeShellApplication {
-          name = "update";
-          runtimeInputs = with pkgs; [
-            git
-            nix
-            nix-update
-            nodejs_22
-          ];
-          text = builtins.readFile ./.scripts/update;
-        });
-      };
-
-      bump = {
-        type = "app";
-        program = pkgs.lib.getExe (pkgs.writeShellApplication {
-          name = "bump";
-          runtimeInputs = with pkgs; [
-            git
-            nix-update
-            nodejs_22
-          ];
-          text = builtins.readFile ./.scripts/bump;
-        });
-      };
     });
 
     formatter = forSystem ({pkgs, ...}: pkgs.alejandra);

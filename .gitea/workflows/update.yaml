@@ -16,13 +16,18 @@ jobs:
         with:
           nix_path: nixpkgs=channel:nixos-unstable
 
+      - uses: nicknovitski/nix-develop@v1
+        with:
+          arguments: '.#ci'
+
       - name: Setup git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -B update
 
-      - run: nix run .#update
+      - name: Update
+        run: ./.scripts/update
 
       - name: Create pull request
         env:
