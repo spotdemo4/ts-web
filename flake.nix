@@ -76,7 +76,7 @@
           pname = "check-client";
           inherit version;
           src = ./.;
-          npmDepsHash = "";
+          npmDepsHash = "sha256-m0tMCJevjnfi2D+bBm0Beai9Mne543tpVVJ7wo+Afo4=";
           dontNpmInstall = true;
 
           buildPhase = ''
