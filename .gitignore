@@ -1,0 +1,9 @@
+.env
+
+# Svelte
+/node_modules/
+/.svelte-kit/
+
+# Nix
+/result*
+/.direnv/

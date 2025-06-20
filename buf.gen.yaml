@@ -1,0 +1,20 @@
+version: v2
+clean: true
+inputs:
+  - directory: proto
+
+managed:
+  enabled: true
+
+plugins:
+  - local: protoc-gen-es
+    out: src/lib/connect
+    opt: target=ts
+    include_imports: true
+
+  - local: protoc-gen-connect-openapi
+    out: static/openapi
+    strategy: all
+    opt:
+      - base=openapi.yaml
+      - path=openapi.yaml
