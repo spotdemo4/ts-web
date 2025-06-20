@@ -58,6 +58,15 @@
             nodejs_22
           ];
         };
+
+      ci = pkgs.mkShell {
+        packages = with pkgs; [
+          git
+          nodejs_22
+          nix-update
+          renovate
+        ];
+      };
     });
 
     checks = forSystem ({pkgs, ...}: {
