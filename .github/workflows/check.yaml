@@ -66,8 +66,8 @@ jobs:
           nix-update --flake --version=skip default
 
           if ! git diff --quiet; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git config user.name "trenovate[bot]"
+            git config user.email "1433620+trenovate[bot]@users.noreply.github.com"
             git add --update --ignore-removal .
             git commit -m "fix(deps): update nix hash"
             git push origin "$GITHUB_HEAD_REF"
