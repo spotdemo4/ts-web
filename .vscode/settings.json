@@ -1,30 +1,29 @@
 {
-  "editor.formatOnSave": true,
+	"editor.formatOnSave": true,
 
-  // Proto
-  "[proto]": {
-    "editor.defaultFormatter": "bufbuild.vscode-buf"
-  },
+	// Proto
+	"[proto]": {
+		"editor.defaultFormatter": "bufbuild.vscode-buf"
+	},
 
-  // ESLint
-  "eslint.workingDirectories": ["./client"],
-  "eslint.validate": ["svelte", "javascript", "typescript"],
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  },
+	// ESLint
+	"eslint.validate": ["svelte", "javascript", "typescript"],
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit"
+	},
 
-  // Svelte
-  "svelte.enable-ts-plugin": true,
-  "[svelte]": {
-    "editor.defaultFormatter": "svelte.svelte-vscode"
-  },
+	// Svelte
+	"svelte.enable-ts-plugin": true,
+	"[svelte]": {
+		"editor.defaultFormatter": "svelte.svelte-vscode"
+	},
 
-  // Prettier
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+	// Prettier
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"[javascript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	}
 }
