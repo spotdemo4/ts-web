@@ -2,6 +2,7 @@
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+flake.lock
 
 # Build output
 build

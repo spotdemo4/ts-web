@@ -2,7 +2,7 @@ name: update
 
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 permissions:
@@ -51,7 +51,7 @@ jobs:
           branch: update
           title: update
           body: automatic update
-          commit-message: "chore: update"
+          commit-message: 'chore: update'
           token: ${{ secrets.PAT }}
 
       - name: Enable Automerge
