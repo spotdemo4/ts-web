@@ -51,12 +51,13 @@ jobs:
         with:
           arguments: '.#ci'
 
-      - run: nix flake check --accept-flake-config
-
       - uses: spotdemo4/setup-git-app-user@v2
+        id: user
         with:
           app-id: ${{ vars.CLIENT_ID }}
           private-key: ${{ secrets.PRIVATE_KEY }}
+
+      - run: nix flake check --accept-flake-config
 
       - name: Fix hash mismatches
         if: ${{ failure() && github.event_name == 'pull_request' }}
@@ -69,12 +70,16 @@ jobs:
           nix-update --flake --version=skip default
 
           if ! git diff --quiet; then
+            git config --global user.name "${{ steps.user.outputs.name }}"
+            git config --global user.email "${{ steps.user.outputs.email }}"
+
             git add --update --ignore-removal .
 
             email=$(git config user.email)
             name=$(git config user.name)
             echo "$email"
             echo "$name"
+
             git commit -m "fix(deps): update nix hash"
             git push origin "$GITHUB_HEAD_REF"
           fi
