@@ -54,7 +54,7 @@ jobs:
       - run: nix flake check --accept-flake-config
 
   hash:
-    needs: check
+    needs: [runner, check]
     if: ${{ failure() && github.event_name == 'pull_request' }}
     runs-on: ${{ needs.runner.outputs.label }}
     steps:
