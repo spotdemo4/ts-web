@@ -75,8 +75,8 @@ jobs:
         with:
           token: ${{ steps.token.outputs.token }}
           sign-commits: true
-          commit-message: 'fix(deps): update nix flake'
-          title: 'fix(deps): update nix flake'
+          commit-message: 'chore(deps): update nix flake'
+          title: 'chore(deps): update nix flake'
 
       - name: Enable automerge
         if: ${{ steps.pr.outputs.pull-request-number }}
@@ -86,5 +86,5 @@ jobs:
           gh pr merge
           --squash
           --auto
-          --subject "fix(deps): update nix flake"
+          --subject "chore(deps): update nix flake"
           "${{ steps.pr.outputs.pull-request-number }}"
