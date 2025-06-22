@@ -75,8 +75,8 @@ jobs:
         with:
           token: ${{ steps.token.outputs.token }}
           sign-commits: true
-          commit-message: fix(deps): update nix flake
-          title: fix(deps): update nix flake
+          commit-message: 'fix(deps): update nix flake'
+          title: 'fix(deps): update nix flake'
 
       - name: Enable automerge
         if: ${{ steps.pr.outputs.pull-request-number }}
