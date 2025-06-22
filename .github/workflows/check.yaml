@@ -61,17 +61,18 @@ jobs:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
       - uses: DeterminateSystems/magic-nix-cache-action@main
+
       - uses: nicknovitski/nix-develop@v1
         with:
           arguments: '.#ci'
+
+      - run: nix-update --flake --version=skip default
 
       - uses: actions/create-github-app-token@v2
         id: token
         with:
           app-id: ${{ vars.CLIENT_ID }}
           private-key: ${{ secrets.PRIVATE_KEY }}
-
-      - run: nix-update --flake --version=skip default
 
       - uses: suzuki-shunsuke/commit-action@v0.0.8
         with:

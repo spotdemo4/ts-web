@@ -36,6 +36,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
       - uses: DeterminateSystems/magic-nix-cache-action@main
+
       - uses: nicknovitski/nix-develop@v1
         with:
           arguments: '.#ci'
@@ -62,13 +63,13 @@ jobs:
           reinstall: true
       - uses: DeterminateSystems/magic-nix-cache-action@main
 
+      - run: nix flake update --accept-flake-config
+
       - uses: actions/create-github-app-token@v2
         id: token
         with:
           app-id: ${{ vars.CLIENT_ID }}
           private-key: ${{ secrets.PRIVATE_KEY }}
-
-      - run: nix flake update --accept-flake-config
 
       - uses: peter-evans/create-pull-request@v7
         id: pr
