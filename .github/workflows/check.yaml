@@ -26,6 +26,7 @@ jobs:
 
   check:
     needs: skip
+    if: ${{ needs.skip.outputs.should_skip != 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Harden the runner (Audit all outbound calls)
