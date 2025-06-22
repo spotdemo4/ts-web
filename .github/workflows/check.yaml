@@ -74,8 +74,7 @@ jobs:
           app-id: ${{ vars.CLIENT_ID }}
           private-key: ${{ secrets.PRIVATE_KEY }}
 
-      - uses: grafana/github-api-commit-action@v1.0.0
+      - uses: suzuki-shunsuke/commit-action@v0.0.8
         with:
-          token: ${{ steps.token.outputs.token }}
-          stage-all-files: true
-          commit-message: 'fix(deps): update nix hash'
+          github_token: ${{ steps.token.outputs.token }}
+          commit_message: 'fix(deps): update nix hash'
