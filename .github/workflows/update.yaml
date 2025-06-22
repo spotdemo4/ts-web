@@ -7,7 +7,6 @@ on:
 
 jobs:
   renovate:
-    needs: runner
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,7 +30,6 @@ jobs:
         run: renovate
 
   flake:
-    needs: runner
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
