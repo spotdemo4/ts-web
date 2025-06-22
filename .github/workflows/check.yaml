@@ -19,33 +19,9 @@ jobs:
         id: skip_check
         uses: fkirc/skip-duplicate-actions@v5
 
-  runner:
-    needs: skip
-    if: ${{ needs.skip.outputs.should_skip != 'true' }}
-    runs-on: ubuntu-latest
-    outputs:
-      label: ${{ steps.runner.outputs.label }}
-    steps:
-      - uses: actions/create-github-app-token@v2
-        id: token
-        with:
-          app-id: ${{ vars.CLIENT_ID }}
-          private-key: ${{ secrets.PRIVATE_KEY }}
-
-      - name: Get runner
-        id: runner
-        run: |
-          runners=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: token ${{ steps.token.outputs.token }}" "https://api.github.com/repos/${{ github.repository }}/actions/runners")
-          available=$(echo "$runners" | jq '.runners[] | select(.status == "online" and .labels[] .name == "self-hosted")')
-          if [ -n "$available" ]; then
-            echo "label=self-hosted" >> $GITHUB_OUTPUT
-          else
-            echo "label=ubuntu-latest" >> $GITHUB_OUTPUT
-          fi
-
   check:
     needs: runner
-    runs-on: ${{ needs.runner.outputs.label }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
@@ -56,7 +32,7 @@ jobs:
   hash:
     needs: [runner, check]
     if: ${{ failure() && github.event_name == 'pull_request' }}
-    runs-on: ${{ needs.runner.outputs.label }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
