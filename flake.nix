@@ -64,7 +64,6 @@
           git
           nodejs_22
           nix-update
-          renovate
         ];
       };
     });

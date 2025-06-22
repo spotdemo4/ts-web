@@ -54,11 +54,7 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@999d616271516551cacca0c8b34a02e94d4f79e8 # main
       - uses: DeterminateSystems/magic-nix-cache-action@06b5f8a297d878c1f072bffc3d5b74fa93e192ab # main
 
-      - uses: nicknovitski/nix-develop@9be7cfb4b10451d3390a75dc18ad0465bed4932a # v1.2.1
-        with:
-          arguments: '.#ci'
-
-      - run: nix-update --flake --version=skip default
+      - run: nix develop .#ci --command nix-update --flake --version=skip default
 
       - uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2.0.6
         id: token
