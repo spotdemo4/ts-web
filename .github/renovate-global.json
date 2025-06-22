@@ -5,15 +5,5 @@
 	"onboarding": false,
 	"requireConfig": "optional",
 	"platform": "github",
-	"lockFileMaintenance": {
-		"enabled": true
-	},
-	"repositories": ["spotdemo4/ts-web"],
-	"extends": ["config:recommended"],
-	"packageRules": [
-		{
-			"matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-			"automerge": true
-		}
-	]
+	"repositories": ["spotdemo4/ts-web"]
 }
