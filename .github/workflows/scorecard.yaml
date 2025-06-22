@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   analysis:
-    name: Scorecard analysis
+    name: scorecard analysis
     runs-on: ubuntu-latest
     permissions:
       # Needed for Code scanning upload

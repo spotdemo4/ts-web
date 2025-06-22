@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   analyze:
-    name: Analyze
+    name: codeql analysis
     runs-on: ubuntu-latest
     permissions:
       actions: read
