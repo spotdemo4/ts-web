@@ -12,10 +12,16 @@ jobs:
     outputs:
       label: ${{ steps.runner.outputs.label }}
     steps:
+      - uses: actions/create-github-app-token@v2
+        id: token
+        with:
+          app-id: ${{ vars.CLIENT_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+
       - name: Get runner
         id: runner
         run: |
-          runners=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: token ${{ secrets.PAT }}" "https://api.github.com/repos/${{ github.repository }}/actions/runners")
+          runners=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: token ${{ steps.token.outputs.token }}" "https://api.github.com/repos/${{ github.repository }}/actions/runners")
           available=$(echo "$runners" | jq '.runners[] | select(.status == "online" and .labels[] .name == "self-hosted")')
           if [ -n "$available" ]; then
             echo "label=self-hosted" >> $GITHUB_OUTPUT
@@ -28,11 +34,8 @@ jobs:
     runs-on: ${{ needs.runner.outputs.label }}
     steps:
       - uses: actions/checkout@v4
-
       - uses: DeterminateSystems/nix-installer-action@main
-
       - uses: DeterminateSystems/magic-nix-cache-action@main
-
       - uses: nicknovitski/nix-develop@v1
         with:
           arguments: '.#ci'
@@ -54,33 +57,27 @@ jobs:
     runs-on: ${{ needs.runner.outputs.label }}
     steps:
       - uses: actions/checkout@v4
-
       - uses: DeterminateSystems/nix-installer-action@main
         with:
           reinstall: true
-
       - uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - uses: spotdemo4/setup-git-app-user@v2
-        id: user
+      - uses: actions/create-github-app-token@v2
+        id: token
         with:
           app-id: ${{ vars.CLIENT_ID }}
           private-key: ${{ secrets.PRIVATE_KEY }}
 
-      - uses: DeterminateSystems/update-flake-lock@main
-        id: update
+      - run: nix flake update --accept-flake-config
+
+      - uses: peter-evans/create-pull-request@v7
+        id: pr
         with:
-          nix-options: --accept-flake-config
-          token: ${{ steps.user.outputs.token }}
-          pr-title: 'fix(deps): update nix flake'
-          commit-msg: 'fix(deps): update nix flake'
-          git-author-name: ${{ steps.user.outputs.name }}
-          git-author-email: ${{ steps.user.outputs.email }}
-          git-committer-name: ${{ steps.user.outputs.name }}
-          git-committer-email: ${{ steps.user.outputs.email }}
+          token: ${{ steps.generate-token.outputs.token }}
+          sign-commits: true
 
       - name: Enable automerge
-        if: ${{ steps.update.outputs.pull-request-number }}
+        if: ${{ steps.pr.outputs.pull-request-number }}
         env:
           GH_TOKEN: ${{ steps.token.outputs.token }}
         run: >
@@ -88,4 +85,4 @@ jobs:
           --squash
           --auto
           --subject "fix(deps): update nix flake"
-          "${{ steps.update.outputs.pull-request-number }}"
+          "${{ steps.pr.outputs.pull-request-number }}"

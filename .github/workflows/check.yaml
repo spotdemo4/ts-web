@@ -26,10 +26,16 @@ jobs:
     outputs:
       label: ${{ steps.runner.outputs.label }}
     steps:
+      - uses: actions/create-github-app-token@v2
+        id: token
+        with:
+          app-id: ${{ vars.CLIENT_ID }}
+          private-key: ${{ secrets.PRIVATE_KEY }}
+
       - name: Get runner
         id: runner
         run: |
-          runners=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: token ${{ secrets.PAT }}" "https://api.github.com/repos/${{ github.repository }}/actions/runners")
+          runners=$(curl -s -H "Accept: application/vnd.github+json" -H "Authorization: token ${{ steps.token.outputs.token }}" "https://api.github.com/repos/${{ github.repository }}/actions/runners")
           available=$(echo "$runners" | jq '.runners[] | select(.status == "online" and .labels[] .name == "self-hosted")')
           if [ -n "$available" ]; then
             echo "label=self-hosted" >> $GITHUB_OUTPUT
@@ -42,47 +48,29 @@ jobs:
     runs-on: ${{ needs.runner.outputs.label }}
     steps:
       - uses: actions/checkout@v4
-
       - uses: DeterminateSystems/nix-installer-action@main
-
       - uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - uses: nicknovitski/nix-develop@v1
-        with:
-          arguments: '.#ci'
+      - run: nix flake check --accept-flake-config
 
-      - uses: spotdemo4/setup-git-app-user@v2
-        id: user
+  hash:
+    needs: check
+    if: ${{ failure() && github.event_name == 'pull_request' }}
+    runs-on: ${{ needs.runner.outputs.label }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - uses: actions/create-github-app-token@v2
+        id: token
         with:
           app-id: ${{ vars.CLIENT_ID }}
           private-key: ${{ secrets.PRIVATE_KEY }}
 
-      - run: nix flake check --accept-flake-config
+      - run: nix-update --flake --version=skip default
 
-      - name: Fix hash mismatches
-        if: ${{ failure() && github.event_name == 'pull_request' }}
-        id: fix-hashes
-        run: |
-          git stash --include-untracked
-          git fetch --depth=1 origin "$GITHUB_HEAD_REF"
-          git checkout -B "$GITHUB_HEAD_REF" "${{ github.event.pull_request.head.sha }}"
-
-          nix-update --flake --version=skip default
-
-          if ! git diff --quiet; then
-            git config --global user.name "${{ steps.user.outputs.name }}"
-            git config --global user.email "${{ steps.user.outputs.email }}"
-
-            git add --update --ignore-removal .
-
-            email=$(git config user.email)
-            name=$(git config user.name)
-            echo "$email"
-            echo "$name"
-
-            git commit -m "fix(deps): update nix hash"
-            git push origin "$GITHUB_HEAD_REF"
-          fi
-
-          git checkout -
-          git stash pop || true
+      - uses: suzuki-shunsuke/commit-action@v0.0.8
+        with:
+          github_token: ${{ steps.token.outputs.token }}
+          commit_message: 'fix(deps): update nix hash'
