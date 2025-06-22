@@ -5,7 +5,8 @@ on:
     - cron: '0/30 * * * *'
   workflow_dispatch:
 
-permissions: read-all
+permissions:
+  contents: read
 
 jobs:
   renovate:
