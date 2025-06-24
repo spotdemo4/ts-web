@@ -222,7 +222,6 @@ components:
         name:
           type: string
           title: name
-          minLength: 3
         added:
           title: added
           $ref: '#/components/schemas/google.protobuf.Timestamp'
@@ -249,10 +248,12 @@ components:
         name:
           type: string
           title: name
+          minLength: 3
           nullable: true
         description:
           type: string
           title: description
+          minLength: 3
           nullable: true
         price:
           type: number
