@@ -27,6 +27,10 @@ jobs:
           app-id: ${{ vars.CLIENT_ID }}
           private-key: ${{ secrets.PRIVATE_KEY }}
 
+      - uses: nicknovitski/nix-develop@v1
+        with:
+          arguments: '.#ci'
+
       - name: Renovate
         uses: renovatebot/github-action@248bf5a619694187930adc80b9343c37761c173f # v43.0.1
         with:

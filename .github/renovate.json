@@ -11,6 +11,18 @@
 		{
 			"matchUpdateTypes": ["minor", "patch", "pin", "digest"],
 			"automerge": true
+		},
+		{
+			"matchDepNames": ["proto"],
+			"postUpgradeTasks": {
+				"commands": ["buf generate"]
+			}
+		},
+		{
+			"matchManagers": ["npm", "git-submodules"],
+			"postUpgradeTasks": {
+				"commands": ["nix-update --flake --version=skip default"]
+			}
 		}
 	]
 }
