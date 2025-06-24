@@ -14,20 +14,15 @@
 		},
 		{
 			"matchManagers": ["git-submodules"],
+			"matchPackageNames": ["proto"],
 			"postUpgradeTasks": {
-				"commands": ["buf generate"]
+				"commands": ["buf generate", "nix-update --flake --version=skip default"]
 			}
 		},
 		{
 			"matchManagers": ["npm"],
 			"postUpgradeTasks": {
-				"commands": ["npm install"]
-			}
-		},
-		{
-			"matchManagers": ["npm", "git-submodules"],
-			"postUpgradeTasks": {
-				"commands": ["nix-update --flake --version=skip default"]
+				"commands": ["npm install", "nix-update --flake --version=skip default"]
 			}
 		}
 	]
