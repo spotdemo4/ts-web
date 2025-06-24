@@ -1,3 +1,5 @@
+<svelte:options runes={true} />
+
 <script lang="ts">
 	import { createApiReference } from '@scalar/api-reference';
 	import { onDestroy, onMount } from 'svelte';

@@ -1,3 +1,5 @@
+<svelte:options runes={true} />
+
 <script lang="ts">
 	import * as Avatar from '$lib/ui/avatar';
 	import { Button } from '$lib/ui/button';

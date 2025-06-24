@@ -1,3 +1,5 @@
+<svelte:options runes={true} />
+
 <script lang="ts">
 	import type { Item } from '$lib/connect/item/v1/item_pb';
 	import { Button } from '$lib/ui/button';
