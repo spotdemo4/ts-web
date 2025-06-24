@@ -15,13 +15,22 @@
 		{
 			"matchDepNames": ["proto"],
 			"postUpgradeTasks": {
-				"commands": ["buf generate"]
+				"commands": ["buf generate"],
+				"executionMode": "branch"
+			}
+		},
+		{
+			"matchManagers": ["npm"],
+			"postUpgradeTasks": {
+				"commands": ["npm install"],
+				"executionMode": "branch"
 			}
 		},
 		{
 			"matchManagers": ["npm", "git-submodules"],
 			"postUpgradeTasks": {
-				"commands": ["nix-update --flake --version=skip default"]
+				"commands": ["nix-update --flake --version=skip default"],
+				"executionMode": "branch"
 			}
 		}
 	]
