@@ -13,24 +13,22 @@
 			"automerge": true
 		},
 		{
-			"matchDepNames": ["proto"],
+			"matchManagers": ["git-submodules"],
+			"matchPackageNames": ["proto"],
 			"postUpgradeTasks": {
-				"commands": ["buf generate"],
-				"executionMode": "branch"
+				"commands": ["buf generate"]
 			}
 		},
 		{
 			"matchManagers": ["npm"],
 			"postUpgradeTasks": {
-				"commands": ["npm install"],
-				"executionMode": "branch"
+				"commands": ["npm install"]
 			}
 		},
 		{
 			"matchManagers": ["npm", "git-submodules"],
 			"postUpgradeTasks": {
-				"commands": ["nix-update --flake --version=skip default"],
-				"executionMode": "branch"
+				"commands": ["nix-update --flake --version=skip default"]
 			}
 		}
 	]
