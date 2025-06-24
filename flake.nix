@@ -26,46 +26,51 @@
           }
       );
   in {
-    devShells = forSystem ({pkgs, ...}: {
-      default = let
-        protoc-gen-connect-openapi = pkgs.buildGoModule {
-          name = "protoc-gen-connect-openapi";
-          src = pkgs.fetchFromGitHub {
-            owner = "sudorandom";
-            repo = "protoc-gen-connect-openapi";
-            rev = "v0.17.0";
-            sha256 = "sha256-ek9yYvTBrZZUtQAHdTW6dNO72jInWlYi7WvZKVjjxQo=";
-          };
-          vendorHash = "sha256-9v3TESnFQA/KzkVHDPui7eh5tn1AGI/ZOi6Qd35lRew=";
+    devShells = forSystem ({pkgs, ...}: let
+      protoc-gen-connect-openapi = pkgs.buildGoModule {
+        name = "protoc-gen-connect-openapi";
+        src = pkgs.fetchFromGitHub {
+          owner = "sudorandom";
+          repo = "protoc-gen-connect-openapi";
+          rev = "v0.17.0";
+          sha256 = "sha256-ek9yYvTBrZZUtQAHdTW6dNO72jInWlYi7WvZKVjjxQo=";
         };
-      in
-        pkgs.mkShell {
-          packages = with pkgs; [
-            git
+        vendorHash = "sha256-9v3TESnFQA/KzkVHDPui7eh5tn1AGI/ZOi6Qd35lRew=";
+      };
+    in {
+      default = pkgs.mkShell {
+        packages = with pkgs; [
+          git
 
-            # Nix
-            nix-update
-            alejandra
+          # Nix
+          nix-update
+          alejandra
 
-            # Protobuf
-            buf
-            protoc-gen-go
-            protoc-gen-connect-go
-            protoc-gen-es
-            protoc-gen-connect-openapi
+          # Protobuf
+          buf
+          protoc-gen-es
+          protoc-gen-connect-openapi
 
-            # Svelte
-            nodejs_22
-          ];
-        };
+          # Svelte
+          nodejs_22
+        ];
+      };
 
       ci = pkgs.mkShell {
         packages = with pkgs; [
-          buf
           git
-          nix-update
-          nodejs_22
           renovate
+
+          # Nix
+          nix-update
+
+          # Protobuf
+          buf
+          protoc-gen-es
+          protoc-gen-connect-openapi
+
+          # Svelte
+          nodejs_22
         ];
       };
     });
