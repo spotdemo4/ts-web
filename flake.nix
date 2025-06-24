@@ -61,10 +61,11 @@
 
       ci = pkgs.mkShell {
         packages = with pkgs; [
-          git
           buf
-          nodejs_22
+          git
           nix-update
+          nodejs_22
+          renovate
         ];
       };
     });
