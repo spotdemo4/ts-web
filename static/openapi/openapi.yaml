@@ -3,7 +3,7 @@ servers:
   - url: /grpc
 info:
   title: Trevstack API
-  version: 0.0.33
+  version: 0.0.1
   description: API for Trevstack
   contact:
     name: Trev
@@ -131,11 +131,9 @@ components:
       type: object
       properties:
         id:
-          type:
-            - integer
-            - string
+          type: integer
           title: id
-          format: int64
+          format: int32
         added:
           title: added
           $ref: '#/components/schemas/google.protobuf.Timestamp'
@@ -145,11 +143,9 @@ components:
       type: object
       properties:
         id:
-          type:
-            - integer
-            - string
+          type: integer
           title: id
-          format: int64
+          format: int32
       title: DeleteItemRequest
       additionalProperties: false
     item.v1.DeleteItemResponse:
@@ -160,11 +156,9 @@ components:
       type: object
       properties:
         id:
-          type:
-            - integer
-            - string
+          type: integer
           title: id
-          format: int64
+          format: int32
       title: GetItemRequest
       additionalProperties: false
     item.v1.GetItemResponse:
@@ -222,11 +216,9 @@ components:
       type: object
       properties:
         id:
-          type:
-            - integer
-            - string
+          type: integer
           title: id
-          format: int64
+          format: int32
         name:
           type: string
           title: name
@@ -251,11 +243,9 @@ components:
       type: object
       properties:
         id:
-          type:
-            - integer
-            - string
+          type: integer
           title: id
-          format: int64
+          format: int32
         name:
           type: string
           title: name
@@ -520,20 +510,16 @@ components:
       type: object
       properties:
         id:
-          type:
-            - integer
-            - string
+          type: integer
           title: id
-          format: int64
+          format: int32
         username:
           type: string
           title: username
         profilePictureId:
-          type:
-            - integer
-            - string
+          type: integer
           title: profile_picture_id
-          format: int64
+          format: int32
           nullable: true
       title: User
       additionalProperties: false

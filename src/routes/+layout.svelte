@@ -1,3 +1,5 @@
+<svelte:options runes={true} />
+
 <script>
 	import '../app.css';
 	import { Sonner } from '$lib/ui/sonner';
