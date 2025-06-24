@@ -333,6 +333,7 @@ components:
         username:
           type: string
           title: username
+          minLength: 3
       title: BeginPasskeyLoginRequest
       additionalProperties: false
     user.v1.BeginPasskeyLoginResponse:
@@ -349,6 +350,7 @@ components:
         username:
           type: string
           title: username
+          minLength: 3
         attestation:
           type: string
           title: attestation
@@ -372,6 +374,7 @@ components:
         password:
           type: string
           title: password
+          minLength: 5
       title: LoginRequest
       additionalProperties: false
     user.v1.LoginResponse:
@@ -400,9 +403,11 @@ components:
         password:
           type: string
           title: password
+          minLength: 5
         confirmPassword:
           type: string
           title: confirm_password
+          minLength: 5
       title: SignUpRequest
       additionalProperties: false
     user.v1.SignUpResponse:
@@ -470,12 +475,15 @@ components:
         oldPassword:
           type: string
           title: old_password
+          minLength: 5
         newPassword:
           type: string
           title: new_password
+          minLength: 5
         confirmPassword:
           type: string
           title: confirm_password
+          minLength: 5
       title: UpdatePasswordRequest
       additionalProperties: false
     user.v1.UpdatePasswordResponse:
