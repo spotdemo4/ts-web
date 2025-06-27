@@ -2,63 +2,23 @@ name: update
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 * * * *'
   workflow_dispatch:
 
 jobs:
-  update:
+  renovate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: https://github.com/actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: https://github.com/DeterminateSystems/nix-installer-action@41e0dcf2158a3d6eefca89332cc236df1733e8a7 # main
 
-      - name: Install nix
-        uses: cachix/install-nix-action@v31
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
-
-      - uses: nicknovitski/nix-develop@v1
+      - uses: https://github.com/nicknovitski/nix-develop@9be7cfb4b10451d3390a75dc18ad0465bed4932a # v1.2.1
         with:
           arguments: '.#ci'
 
-      - name: Setup git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -B update
-
-      - name: Update
-        run: ./.scripts/update
-
-      - name: Create pull request
+      - name: Renovate
         env:
-          PAT: ${{ secrets.PAT }}
-        run: |
-          if git diff --exit-code main origin/main; then
-            echo "No changes found!"
-            exit 0
-          fi
-
-          git push origin update --force
-
-          URL="${{ gitea.server_url }}"
-          REPO_OWNER_SLASH_NAME="${{ gitea.repository }}"
-
-          PRS=$(curl -s -X GET -H "Authorization: token $PAT" \
-            -H "Content-Type: application/json" \
-            "$URL/api/v1/repos/$REPO_OWNER_SLASH_NAME/pulls?state=open")
-          PR_UPDATE=$(echo "$PRS" | jq -cr '.[] | select( .title | contains("update") )')
-
-          if [ -z "$PR_UPDATE" ]; then
-            echo "Creating pull request"
-
-            PR_CREATE=$(curl -s -X POST -H "Authorization: token $PAT" \
-              -H "Content-Type: application/json" \
-              -d '{"title":"update","body":"automatic update","head":"update","base":"main"}' \
-              "$URL/api/v1/repos/$REPO_OWNER_SLASH_NAME/pulls")
-            PR_NUMBER=$(echo "$PR_CREATE" | jq -r '.number')
-
-            curl -s -X POST -H "Authorization: token $PAT" \
-              -H "Content-Type: application/json" \
-              -d '{"Do":"merge","merge_when_checks_succeed":true,"delete_branch_after_merge":true}' \
-              "$URL/api/v1/repos/$REPO_OWNER_SLASH_NAME/pulls/$PR_NUMBER/merge"
-          fi
+          RENOVATE_CONFIG_FILE: .gitea/renovate-global.json
+          RENOVATE_TOKEN: ${{ secrets.PAT }}
+          RENOVATE_GITHUB_COM_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: renovate
