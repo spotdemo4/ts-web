@@ -40,7 +40,7 @@ jobs:
 
       - run: nix flake check --accept-flake-config
 
-  branch:
+  tag:
     needs: check
     if: ${{ always() && !failure() && !cancelled() }}
     runs-on: ubuntu-latest
@@ -54,4 +54,4 @@ jobs:
 
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - run: git push origin "${{ github.ref }}~0:refs/heads/release" --force
+      - run: git push origin "${{ github.ref_name }}:latest" --force
