@@ -27,6 +27,11 @@
 			"postUpgradeTasks": {
 				"commands": ["npm install", "nix-update --flake --version=skip default"]
 			}
+		},
+		{
+			"matchFileNames": ["flake.nix"],
+			"versioning": "semver-coerced",
+			"enabled": false
 		}
 	]
 }
