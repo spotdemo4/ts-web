@@ -1,3 +1,3 @@
 [submodule "proto"]
 	path = proto
-	url = ../spotdemo4/ts-proto.git
+	url = ../ts-proto.git
