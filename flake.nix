@@ -7,7 +7,7 @@
 
   outputs = {nixpkgs, ...}: let
     pname = "trevstack-web";
-    version = "0.0.6";
+    version = "0.0.7";
 
     build-systems = [
       "x86_64-linux"
@@ -92,7 +92,7 @@
           pname = "check-npm";
           inherit version;
           src = ./.;
-          npmDepsHash = "sha256-8dbHwX0U/aUlqOZS57HTn2JaENjK5bZypAyfYhhk8G0=";
+          npmDepsHash = "sha256-b492TVH0V4TfSRepAzGs7kPePiKlS9eh2tBSxETNR+8=";
           dontNpmInstall = true;
 
           buildPhase = ''
@@ -111,7 +111,7 @@
         web = pkgs.buildNpmPackage {
           inherit pname version;
           src = ./.;
-          npmDepsHash = "sha256-8dbHwX0U/aUlqOZS57HTn2JaENjK5bZypAyfYhhk8G0=";
+          npmDepsHash = "sha256-b492TVH0V4TfSRepAzGs7kPePiKlS9eh2tBSxETNR+8=";
 
           installPhase = ''
             cp -r build "$out"
