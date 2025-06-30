@@ -6,7 +6,7 @@
   };
 
   outputs = {nixpkgs, ...}: let
-    pname = "trevstack-web";
+    pname = "ts-web";
     version = "0.0.7";
 
     build-systems = [
