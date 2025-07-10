@@ -92,7 +92,7 @@
           pname = "check-npm";
           inherit version;
           src = ./.;
-          npmDepsHash = "sha256-STf7YT/AnFOMuVEt+s+IhU+Zci/CMggOPEXpUlzfCjY=";
+          npmDepsHash = "sha256-8lxVWxRivyXjPEBpxIHFZDJaCzbRZaS9D8CgmtUzE5w=";
           dontNpmInstall = true;
 
           buildPhase = ''
@@ -111,7 +111,7 @@
         web = pkgs.buildNpmPackage {
           inherit pname version;
           src = ./.;
-          npmDepsHash = "sha256-STf7YT/AnFOMuVEt+s+IhU+Zci/CMggOPEXpUlzfCjY=";
+          npmDepsHash = "sha256-8lxVWxRivyXjPEBpxIHFZDJaCzbRZaS9D8CgmtUzE5w=";
 
           installPhase = ''
             cp -r build "$out"
