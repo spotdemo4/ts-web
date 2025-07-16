@@ -64,7 +64,7 @@
           platforms = pkgs.lib.platforms.all;
         };
       }));
-  in {
+  in rec {
     devShells = forSystem ({pkgs, ...}: {
       default = pkgs.mkShell {
         packages = with pkgs; [
@@ -116,19 +116,19 @@
         };
       }
       // {
-        test = ts-web."${system}".overrideAttrs {
-          pname = "test";
+        build = ts-web."${system}".overrideAttrs {
           doCheck = true;
           checkPhase = ''
             npx prettier --check .
             npx eslint .
             npx svelte-kit sync && npx svelte-check
           '';
-          dontBuild = true;
           installPhase = ''
             touch $out
           '';
         };
+
+        shell = devShells."${system}".default;
       });
 
     formatter = forSystem ({pkgs, ...}: pkgs.alejandra);
