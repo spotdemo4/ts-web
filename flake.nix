@@ -1,18 +1,36 @@
 {
-  description = "Trevstack Web";
+  description = "Trevstack Web Client";
+
+  nixConfig = {
+    extra-substituters = [
+      "https://trevnur.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "trevnur.cachix.org-1:hBd15IdszwT52aOxdKs5vNTbq36emvEeGqpb25Bkq6o="
+    ];
+  };
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nur = {
+      url = "github:nix-community/NUR";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    semgrep-rules = {
+      url = "github:semgrep/semgrep-rules";
+      flake = false;
+    };
   };
 
-  outputs = {nixpkgs, ...}: let
-    pname = "ts-web";
-    version = "0.0.7";
-
+  outputs = {
+    nixpkgs,
+    nur,
+    semgrep-rules,
+    ...
+  }: let
     build-systems = [
       "x86_64-linux"
       "aarch64-linux"
-      "x86_64-darwin"
       "aarch64-darwin"
     ];
     forSystem = f:
@@ -22,25 +40,36 @@
             inherit system;
             pkgs = import nixpkgs {
               inherit system;
+              overlays = [nur.overlays.default];
             };
           }
       );
-  in {
-    devShells = forSystem ({pkgs, ...}: let
-      protoc-gen-connect-openapi = pkgs.buildGoModule {
-        name = "protoc-gen-connect-openapi";
-        src = pkgs.fetchFromGitHub {
-          owner = "sudorandom";
-          repo = "protoc-gen-connect-openapi";
-          rev = "v0.17.0";
-          sha256 = "sha256-ek9yYvTBrZZUtQAHdTW6dNO72jInWlYi7WvZKVjjxQo=";
+
+    ts-web = forSystem ({pkgs, ...}:
+      pkgs.buildNpmPackage (finalAttrs: {
+        pname = "ts-web";
+        version = "0.0.7";
+        src = ./.;
+        npmDepsHash = "sha256-ECifV9ERqbM5s4ZO/NL/eZUpTXvUcrKBBwElciYmcf8=";
+
+        installPhase = ''
+          cp -r build "$out"
+        '';
+
+        meta = {
+          description = "A simple GO CRUD app - web client";
+          homepage = "https://github.com/spotdemo4/ts-web";
+          changelog = "https://github.com/spotdemo4/ts-web/releases/tag/v${finalAttrs.version}";
+          license = pkgs.lib.licenses.mit;
+          platforms = pkgs.lib.platforms.all;
         };
-        vendorHash = "sha256-9v3TESnFQA/KzkVHDPui7eh5tn1AGI/ZOi6Qd35lRew=";
-      };
-    in {
+      }));
+  in {
+    devShells = forSystem ({pkgs, ...}: {
       default = pkgs.mkShell {
         packages = with pkgs; [
           git
+          renovate
 
           # Nix
           nix-update
@@ -49,25 +78,7 @@
           # Protobuf
           buf
           protoc-gen-es
-          protoc-gen-connect-openapi
-
-          # Svelte
-          nodejs_22
-        ];
-      };
-
-      ci = pkgs.mkShell {
-        packages = with pkgs; [
-          git
-          renovate
-
-          # Nix
-          nix-update
-
-          # Protobuf
-          buf
-          protoc-gen-es
-          protoc-gen-connect-openapi
+          pkgs.nur.repos.trev.protoc-gen-connect-openapi
 
           # Svelte
           nodejs_22
@@ -75,50 +86,56 @@
       };
     });
 
-    checks = forSystem ({pkgs, ...}: {
-      nix = with pkgs;
-        runCommandLocal "check-nix" {
+    checks = forSystem ({
+      pkgs,
+      system,
+      ...
+    }:
+      pkgs.nur.repos.trev.lib.mkChecks {
+        lint = {
+          src = ./.;
           nativeBuildInputs = with pkgs; [
             alejandra
           ];
-        } ''
-          cd ${./.}
-          alejandra -c .
-          touch $out
-        '';
+          checkPhase = ''
+            alejandra -c .
+          '';
+        };
 
-      npm = with pkgs;
-        buildNpmPackage {
-          pname = "check-npm";
-          inherit version;
+        scan = {
           src = ./.;
-          npmDepsHash = "sha256-ECifV9ERqbM5s4ZO/NL/eZUpTXvUcrKBBwElciYmcf8=";
-          dontNpmInstall = true;
-
-          buildPhase = ''
+          nativeBuildInputs = [
+            pkgs.nur.repos.trev.opengrep
+          ];
+          checkPhase = ''
+            mkdir -p "$TMP/scan"
+            HOME="$TMP/scan"
+            opengrep scan --quiet --error --config="${semgrep-rules}/typescript"
+            opengrep scan --quiet --error --config="${semgrep-rules}/javascript"
+          '';
+        };
+      }
+      // {
+        test = ts-web."${system}".overrideAttrs {
+          pname = "test";
+          doCheck = true;
+          checkPhase = ''
             npx prettier --check .
             npx eslint .
             npx svelte-kit sync && npx svelte-check
+          '';
+          dontBuild = true;
+          installPhase = ''
             touch $out
           '';
         };
-    });
+      });
 
     formatter = forSystem ({pkgs, ...}: pkgs.alejandra);
 
     packages = forSystem (
-      {pkgs, ...}: let
-        web = pkgs.buildNpmPackage {
-          inherit pname version;
-          src = ./.;
-          npmDepsHash = "sha256-ECifV9ERqbM5s4ZO/NL/eZUpTXvUcrKBBwElciYmcf8=";
-
-          installPhase = ''
-            cp -r build "$out"
-          '';
-        };
-      in {
-        default = web;
+      {system, ...}: {
+        default = ts-web."${system}";
       }
     );
   };

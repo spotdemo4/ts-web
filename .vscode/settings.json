@@ -25,5 +25,10 @@
 	},
 	"[typescript]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	}
+	},
+
+	// Nix
+	"nix.enableLanguageServer": true,
+	"nix.serverPath": "nixd",
+	"nix.formatterPath": "alejandra"
 }

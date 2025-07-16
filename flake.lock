@@ -1,5 +1,26 @@
 {
   "nodes": {
+    "flake-parts": {
+      "inputs": {
+        "nixpkgs-lib": [
+          "nur",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1733312601,
+        "narHash": "sha256-4pDvzqnegAfRkPwO3wmwBhVi/Sye1mzps0zHWYnP88c=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "205b12d8b7cd4802fbcb8e8ef6a0f1408781a4f9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1751984180,
@@ -16,9 +37,48 @@
         "type": "github"
       }
     },
+    "nur": {
+      "inputs": {
+        "flake-parts": "flake-parts",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1752658783,
+        "narHash": "sha256-tgi3xJhy0E6bVL2gCPBVqwItoRCptp+F9XiRMogxOME=",
+        "owner": "nix-community",
+        "repo": "NUR",
+        "rev": "c5750e669e2712fed3e5e5a3b68ed8415d9ca214",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "NUR",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "nur": "nur",
+        "semgrep-rules": "semgrep-rules"
+      }
+    },
+    "semgrep-rules": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1752521337,
+        "narHash": "sha256-CkR0L7vZXIPALP6N2JixRRnC+JQTt8S2LyrVFrwSu3k=",
+        "owner": "semgrep",
+        "repo": "semgrep-rules",
+        "rev": "0a156cffa72cc89e22841cf29440dda889102335",
+        "type": "github"
+      },
+      "original": {
+        "owner": "semgrep",
+        "repo": "semgrep-rules",
+        "type": "github"
       }
     }
   },

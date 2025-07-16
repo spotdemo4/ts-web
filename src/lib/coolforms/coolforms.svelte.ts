@@ -121,6 +121,7 @@ export function coolForm<Service extends DescService, Method extends Service['me
 		// Send response
 		if (method.methodKind == 'unary') {
 			// @ts-expect-error I can't figure out how to make this typescript compliant
+			// nosemgrep
 			const response = client[method.localName]($state.snapshot(input)) as Promise<
 				MessageShape<Method['output']>
 			>;
