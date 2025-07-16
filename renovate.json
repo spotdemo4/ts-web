@@ -35,6 +35,11 @@
 		},
 		{
 			"matchManagers": ["npm"],
+			"matchUpdateTypes": ["lockFileMaintenance"],
+			"schedule": ["before 4am on monday"]
+		},
+		{
+			"matchManagers": ["npm"],
 			"postUpgradeTasks": {
 				"commands": ["npm install", "nix-update --flake --version=skip default"]
 			}
