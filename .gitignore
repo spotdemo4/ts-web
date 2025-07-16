@@ -7,3 +7,6 @@
 # Nix
 /result*
 /.direnv/
+
+# Build
+/build/
