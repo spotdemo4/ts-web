@@ -48,9 +48,9 @@
     ts-web = forSystem ({pkgs, ...}:
       pkgs.buildNpmPackage (finalAttrs: {
         pname = "ts-web";
-        version = "0.0.8";
+        version = "0.0.9";
         src = ./.;
-        npmDepsHash = "sha256-zHGLRiYzCQdROtXphQExXpnV5GBNLo8baNlTyIlJQLY=";
+        npmDepsHash = "sha256-nAZf6RUTH/IUhYwfQ5wEEFjmifRApinnjbu1QHt9W1c=";
 
         installPhase = ''
           cp -r build "$out"
