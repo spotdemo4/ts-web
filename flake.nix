@@ -83,6 +83,10 @@
           # Svelte
           nodejs_22
         ];
+        shellHook = ''
+          echo "nix flake check --accept-flake-config" > .git/hooks/pre-commit
+          chmod +x .git/hooks/pre-commit
+        '';
       };
     });
 
@@ -96,9 +100,11 @@
           src = ./.;
           nativeBuildInputs = with pkgs; [
             alejandra
+            renovate
           ];
           checkPhase = ''
             alejandra -c .
+            renovate-config-validator
           '';
         };
 
