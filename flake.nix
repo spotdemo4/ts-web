@@ -50,7 +50,7 @@
         pname = "ts-web";
         version = "0.0.9";
         src = ./.;
-        npmDepsHash = "sha256-BKMXJt9RPoXfBGkDTxnM9pgP/Gin1UTVr6iFo5On5zQ=";
+        npmDepsHash = "sha256-6rOEqfDT5+bzJKq4Lf29ZDBEeIXACVbuqnLysr5rOxI=";
 
         installPhase = ''
           cp -r build "$out"
