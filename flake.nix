@@ -69,6 +69,7 @@
       default = pkgs.mkShell {
         packages = with pkgs; [
           git
+          action-validator
           renovate
 
           # Nix
@@ -101,10 +102,14 @@
           nativeBuildInputs = with pkgs; [
             alejandra
             renovate
+            action-validator
           ];
           checkPhase = ''
             alejandra -c .
             renovate-config-validator
+            action-validator .github/workflows/*
+            action-validator .gitea/workflows/*
+            action-validator .forgejo/workflows/*
           '';
         };
 

@@ -6,12 +6,21 @@
 		"automerge": true,
 		"schedule": ["at any time"]
 	},
-	"git-submodules": {
-		"enabled": true
-	},
 	"nix": {
 		"enabled": true
 	},
+	"customManagers": [
+		{
+			"customType": "regex",
+			"description": "Update Buf inputs",
+			"managerFilePatterns": ["/^buf.gen.yaml$/"],
+			"matchStrings": [
+				".*git_repo: (?<packageName>.*\\/(?<depName>.*).git)[\\s\\S]*branch: (?<currentValue>.*)[\\s\\S]*ref: (?<currentDigest>.*)"
+			],
+			"depTypeTemplate": "buf",
+			"datasourceTemplate": "git-refs"
+		}
+	],
 	"packageRules": [
 		{
 			"matchUpdateTypes": ["minor", "patch", "pin", "digest"],
@@ -32,7 +41,8 @@
 			"groupName": "GitHub Actions"
 		},
 		{
-			"matchManagers": ["git-submodules"],
+			"matchManagers": ["custom.regex"],
+			"matchDepTypes": ["buf"],
 			"postUpgradeTasks": {
 				"commands": ["buf generate", "nix-update --flake --version=skip default"]
 			}
