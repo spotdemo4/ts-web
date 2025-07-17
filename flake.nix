@@ -69,8 +69,6 @@
       default = pkgs.mkShell {
         packages = with pkgs; [
           git
-          action-validator
-          renovate
 
           # Nix
           nix-update
@@ -83,6 +81,11 @@
 
           # Svelte
           nodejs_22
+
+          # Actions
+          action-validator
+          renovate
+          pkgs.nur.repos.trev.opengrep
         ];
         shellHook = ''
           echo "nix flake check --accept-flake-config" > .git/hooks/pre-commit

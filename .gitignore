@@ -1,12 +1,10 @@
 .env
 
-# Svelte
-/node_modules/
+# Build
+/build/
 /.svelte-kit/
+/node_modules/
 
 # Nix
 /result*
 /.direnv/
-
-# Build
-/build/
