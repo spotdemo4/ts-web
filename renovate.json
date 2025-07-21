@@ -3,8 +3,7 @@
 	"extends": ["config:recommended", "group:allDigest"],
 	"lockFileMaintenance": {
 		"enabled": true,
-		"automerge": true,
-		"schedule": ["at any time"]
+		"automerge": true
 	},
 	"nix": {
 		"enabled": true
@@ -46,11 +45,6 @@
 			"postUpgradeTasks": {
 				"commands": ["buf generate"]
 			}
-		},
-		{
-			"matchManagers": ["npm"],
-			"matchUpdateTypes": ["lockFileMaintenance"],
-			"schedule": ["before 4am on monday"]
 		},
 		{
 			"matchManagers": ["npm"],
