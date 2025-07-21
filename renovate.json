@@ -44,7 +44,7 @@
 			"matchManagers": ["custom.regex"],
 			"matchDepTypes": ["buf"],
 			"postUpgradeTasks": {
-				"commands": ["buf generate", "nix-update --flake --version=skip default"]
+				"commands": ["buf generate"]
 			}
 		},
 		{
@@ -55,7 +55,7 @@
 		{
 			"matchManagers": ["npm"],
 			"postUpgradeTasks": {
-				"commands": ["npm install", "nix-update --flake --version=skip default"]
+				"commands": ["npm install"]
 			}
 		}
 	]

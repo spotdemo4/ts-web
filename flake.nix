@@ -50,7 +50,13 @@
         pname = "ts-web";
         version = "0.0.9";
         src = ./.;
-        npmDepsHash = "sha256-ayJPYUwCJNkMMhZmqrtTCa+FHJBAkmw3FPoStf+7WmA=";
+        nodejs = pkgs.nodejs_22;
+
+        npmDeps = pkgs.importNpmLock {
+          npmRoot = ./.;
+        };
+
+        npmConfigHook = pkgs.importNpmLock.npmConfigHook;
 
         installPhase = ''
           cp -r build "$out"
