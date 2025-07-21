@@ -75,6 +75,7 @@
       default = pkgs.mkShell {
         packages = with pkgs; [
           git
+          pkgs.nur.repos.trev.bumper
 
           # Nix
           nix-update
