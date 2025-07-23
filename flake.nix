@@ -11,7 +11,12 @@
   };
 
   inputs = {
+    systems.url = "systems";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    utils = {
+      url = "github:numtide/flake-utils";
+      inputs.systems.follows = "systems";
+    };
     nur = {
       url = "github:nix-community/NUR";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -24,29 +29,18 @@
 
   outputs = {
     nixpkgs,
+    utils,
     nur,
     semgrep-rules,
     ...
-  }: let
-    build-systems = [
-      "x86_64-linux"
-      "aarch64-linux"
-      "aarch64-darwin"
-    ];
-    forSystem = f:
-      nixpkgs.lib.genAttrs build-systems (
-        system:
-          f {
-            inherit system;
-            pkgs = import nixpkgs {
-              inherit system;
-              overlays = [nur.overlays.default];
-            };
-          }
-      );
+  }:
+    utils.lib.eachDefaultSystem (system: let
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [nur.overlays.default];
+      };
 
-    ts-web = forSystem ({pkgs, ...}:
-      pkgs.buildNpmPackage (finalAttrs: {
+      ts-web = pkgs.buildNpmPackage (finalAttrs: {
         pname = "ts-web";
         version = "0.0.9";
         src = ./.;
@@ -69,10 +63,9 @@
           license = pkgs.lib.licenses.mit;
           platforms = pkgs.lib.platforms.all;
         };
-      }));
-  in rec {
-    devShells = forSystem ({pkgs, ...}: {
-      default = pkgs.mkShell {
+      });
+    in rec {
+      devShells.default = pkgs.mkShell {
         packages = with pkgs; [
           git
           pkgs.nur.repos.trev.bumper
@@ -94,70 +87,50 @@
           renovate
           pkgs.nur.repos.trev.opengrep
         ];
-        shellHook = ''
-          echo "nix flake check --accept-flake-config" > .git/hooks/pre-push
-          chmod +x .git/hooks/pre-push
-        '';
+        shellHook = pkgs.nur.repos.trev.shellhook.ref;
       };
+
+      checks =
+        pkgs.nur.repos.trev.lib.mkChecks {
+          lint = {
+            src = ./.;
+            deps = with pkgs; [
+              alejandra
+              renovate
+              action-validator
+            ];
+            script = ''
+              alejandra -c .
+              renovate-config-validator
+              renovate-config-validator .gitea/renovate-global.json
+              action-validator .gitea/workflows/*
+            '';
+          };
+          scan = {
+            src = ./.;
+            deps = [
+              pkgs.nur.repos.trev.opengrep
+            ];
+            script = ''
+              opengrep scan --quiet --error --config="${semgrep-rules}/typescript"
+              opengrep scan --quiet --error --config="${semgrep-rules}/javascript"
+            '';
+          };
+        }
+        // {
+          build = ts-web.overrideAttrs {
+            doCheck = true;
+            checkPhase = ''
+              npx prettier --check .
+              npx eslint .
+              npx svelte-kit sync && npx svelte-check
+            '';
+          };
+          shell = devShells.default;
+        };
+
+      packages.default = ts-web;
+
+      formatter = pkgs.alejandra;
     });
-
-    checks = forSystem ({
-      pkgs,
-      system,
-      ...
-    }:
-      pkgs.nur.repos.trev.lib.mkChecks {
-        lint = {
-          src = ./.;
-          nativeBuildInputs = with pkgs; [
-            alejandra
-            renovate
-            action-validator
-          ];
-          checkPhase = ''
-            alejandra -c .
-            renovate-config-validator
-            action-validator .github/workflows/*
-            action-validator .gitea/workflows/*
-            action-validator .forgejo/workflows/*
-          '';
-        };
-
-        scan = {
-          src = ./.;
-          nativeBuildInputs = [
-            pkgs.nur.repos.trev.opengrep
-          ];
-          checkPhase = ''
-            mkdir -p "$TMP/scan"
-            HOME="$TMP/scan"
-            opengrep scan --quiet --error --config="${semgrep-rules}/typescript"
-            opengrep scan --quiet --error --config="${semgrep-rules}/javascript"
-          '';
-        };
-      }
-      // {
-        build = ts-web."${system}".overrideAttrs {
-          doCheck = true;
-          checkPhase = ''
-            npx prettier --check .
-            npx eslint .
-            npx svelte-kit sync && npx svelte-check
-          '';
-          installPhase = ''
-            touch $out
-          '';
-        };
-
-        shell = devShells."${system}".default;
-      });
-
-    formatter = forSystem ({pkgs, ...}: pkgs.alejandra);
-
-    packages = forSystem (
-      {system, ...}: {
-        default = ts-web."${system}";
-      }
-    );
-  };
 }
