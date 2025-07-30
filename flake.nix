@@ -12,7 +12,7 @@
 
   inputs = {
     systems.url = "systems";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     utils = {
       url = "github:numtide/flake-utils";
       inputs.systems.follows = "systems";
@@ -39,8 +39,33 @@
         inherit system;
         overlays = [nur.overlays.default];
       };
+    in rec {
+      devShells.default = pkgs.mkShell {
+        packages = with pkgs; [
+          git
+          pkgs.nur.repos.trev.bumper
 
-      ts-web = pkgs.buildNpmPackage (finalAttrs: {
+          # Nix
+          nix-update
+          alejandra
+
+          # Protobuf
+          buf
+          protoc-gen-es
+          pkgs.nur.repos.trev.protoc-gen-connect-openapi
+
+          # Svelte
+          nodejs_22
+
+          # Actions
+          action-validator
+          pkgs.nur.repos.trev.renovate
+          pkgs.nur.repos.trev.opengrep
+        ];
+        shellHook = pkgs.nur.repos.trev.shellhook.ref;
+      };
+
+      packages.default = pkgs.buildNpmPackage (finalAttrs: {
         pname = "ts-web";
         version = "0.0.9";
         src = ./.;
@@ -64,31 +89,6 @@
           platforms = pkgs.lib.platforms.all;
         };
       });
-    in rec {
-      devShells.default = pkgs.mkShell {
-        packages = with pkgs; [
-          git
-          pkgs.nur.repos.trev.bumper
-
-          # Nix
-          nix-update
-          alejandra
-
-          # Protobuf
-          buf
-          protoc-gen-es
-          pkgs.nur.repos.trev.protoc-gen-connect-openapi
-
-          # Svelte
-          nodejs_22
-
-          # Actions
-          action-validator
-          renovate
-          pkgs.nur.repos.trev.opengrep
-        ];
-        shellHook = pkgs.nur.repos.trev.shellhook.ref;
-      };
 
       checks =
         pkgs.nur.repos.trev.lib.mkChecks {
@@ -96,14 +96,18 @@
             src = ./.;
             deps = with pkgs; [
               alejandra
-              renovate
               action-validator
+              pkgs.nur.repos.trev.renovate
             ];
             script = ''
               alejandra -c .
-              renovate-config-validator
-              renovate-config-validator .gitea/renovate-global.json
+              action-validator .github/workflows/*
               action-validator .gitea/workflows/*
+              action-validator .forgejo/workflows/*
+              renovate-config-validator
+              renovate-config-validator .github/renovate-global.json
+              renovate-config-validator .gitea/renovate-global.json
+              renovate-config-validator .forgejo/renovate-global.json
             '';
           };
           scan = {
@@ -118,7 +122,7 @@
           };
         }
         // {
-          build = ts-web.overrideAttrs {
+          build = packages.default.overrideAttrs {
             doCheck = true;
             checkPhase = ''
               npx prettier --check .
@@ -128,8 +132,6 @@
           };
           shell = devShells.default;
         };
-
-      packages.default = ts-web;
 
       formatter = pkgs.alejandra;
     });
