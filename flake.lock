@@ -70,11 +70,11 @@
     "semgrep-rules": {
       "flake": false,
       "locked": {
-        "lastModified": 1752521337,
-        "narHash": "sha256-CkR0L7vZXIPALP6N2JixRRnC+JQTt8S2LyrVFrwSu3k=",
+        "lastModified": 1753466348,
+        "narHash": "sha256-ZMDAYXGSgCH+r3JTHCM7iq45WPoRqG/0gXG9Onp6dbw=",
         "owner": "semgrep",
         "repo": "semgrep-rules",
-        "rev": "0a156cffa72cc89e22841cf29440dda889102335",
+        "rev": "e9596407245754d555b9c1a35c50955251c34a46",
         "type": "github"
       },
       "original": {
