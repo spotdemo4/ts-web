@@ -67,7 +67,7 @@
 
       packages.default = pkgs.buildNpmPackage (finalAttrs: {
         pname = "ts-web";
-        version = "0.0.9";
+        version = "0.0.10";
         src = ./.;
         nodejs = pkgs.nodejs_22;
 
