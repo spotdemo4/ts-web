@@ -45,17 +45,17 @@
           git
           pkgs.nur.repos.trev.bumper
 
-          # Nix
-          nix-update
-          alejandra
+          # Svelte
+          nodejs_22
 
           # Protobuf
           buf
           protoc-gen-es
           pkgs.nur.repos.trev.protoc-gen-connect-openapi
 
-          # Svelte
-          nodejs_22
+          # Nix
+          alejandra
+          flake-checker
 
           # Actions
           action-validator
@@ -103,13 +103,12 @@
               alejandra -c .
               action-validator .github/workflows/*
               action-validator .gitea/workflows/*
-              action-validator .forgejo/workflows/*
               renovate-config-validator
               renovate-config-validator .github/renovate-global.json
               renovate-config-validator .gitea/renovate-global.json
-              renovate-config-validator .forgejo/renovate-global.json
             '';
           };
+
           scan = {
             src = ./.;
             deps = [

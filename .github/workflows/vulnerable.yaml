@@ -1,28 +1,19 @@
-name: release
+name: vulnerable
 
 on:
-  push:
-    tags: ['v*']
+  schedule:
+    - cron: '5 4 * * *'
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  check:
+  npm:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: DeterminateSystems/nix-installer-action@90bb610b90bf290cad97484ba341453bd1cbefea # v19
       - uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
 
-      - run: nix flake check -L --accept-flake-config
-
-  tag:
-    needs: check
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-      - run: git push origin "${{ github.ref_name }}:latest" --force
+      - run: nix develop --accept-flake-config --command npm audit --audit-level moderate
