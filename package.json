@@ -14,7 +14,7 @@
 		"lint": "prettier --check . && eslint ."
 	},
 	"devDependencies": {
-		"@bufbuild/protovalidate": "^0.8.0",
+		"@bufbuild/protovalidate": "^1.0.0",
 		"@connectrpc/connect": "^2.0.2",
 		"@connectrpc/connect-web": "^2.1.0",
 		"@eslint/compat": "^1.4.0",
