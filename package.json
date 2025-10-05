@@ -22,7 +22,7 @@
 		"@ianvs/prettier-plugin-sort-imports": "^4.7.0",
 		"@lucide/svelte": "^0.544.0",
 		"@scalar/api-reference": "^1.36.2",
-		"@simplewebauthn/browser": "^13.2.0",
+		"@simplewebauthn/browser": "^13.2.2",
 		"@sveltejs/adapter-static": "^3.0.10",
 		"@sveltejs/kit": "^2.43.8",
 		"@sveltejs/vite-plugin-svelte": "^6.2.1",
