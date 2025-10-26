@@ -21,7 +21,7 @@
 		"@eslint/js": "^9.36.0",
 		"@ianvs/prettier-plugin-sort-imports": "^4.7.0",
 		"@lucide/svelte": "^0.548.0",
-		"@scalar/api-reference": "^1.36.2",
+		"@scalar/api-reference": "^1.38.1",
 		"@simplewebauthn/browser": "^13.2.2",
 		"@sveltejs/adapter-static": "^3.0.10",
 		"@sveltejs/kit": "^2.43.8",
