@@ -15,11 +15,80 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    connect-protocol-version:
+      type: number
+      title: Connect-Protocol-Version
+      enum:
+        - 1
+      description: Define the version of the Connect protocol
+      const: 1
+    connect-timeout-header:
+      type: number
+      title: Connect-Timeout-Ms
+      description: Define the timeout, in ms
+    connect.error:
+      type: object
+      properties:
+        code:
+          type: string
+          examples:
+            - not_found
+          enum:
+            - canceled
+            - unknown
+            - invalid_argument
+            - deadline_exceeded
+            - not_found
+            - already_exists
+            - permission_denied
+            - resource_exhausted
+            - failed_precondition
+            - aborted
+            - out_of_range
+            - unimplemented
+            - internal
+            - unavailable
+            - data_loss
+            - unauthenticated
+          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+        message:
+          type: string
+          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/connect.error_details.Any'
+          description: A list of messages that carry the error details. There is no limit on the number of messages.
+      title: Connect Error
+      additionalProperties: true
+      description: 'Error type returned by Connect: https://connectrpc.com/docs/go/errors/#http-representation'
+    connect.error_details.Any:
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'A URL that acts as a globally unique identifier for the type of the serialized message. For example: `type.googleapis.com/google.rpc.ErrorInfo`. This is used to determine the schema of the data in the `value` field and is the discriminator for the `debug` field.'
+        value:
+          type: string
+          format: binary
+          description: The Protobuf message, serialized as bytes and base64-encoded. The specific message type is identified by the `type` field.
+        debug:
+          oneOf:
+            - type: object
+              title: Any
+              additionalProperties: true
+              description: Detailed error information.
+          discriminator:
+            propertyName: type
+          title: Debug
+          description: Deserialized error detail payload. The 'type' field indicates the schema. This field is for easier debugging and should not be relied upon for application logic.
+      additionalProperties: true
+      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message, with an additional debug field for ConnectRPC error details.
     google.protobuf.Timestamp:
       type: string
       examples:
-        - 1s
-        - 1.000340012s
+        - "2023-01-15T01:30:15.01Z"
+        - "2024-12-25T12:00:00Z"
       format: date-time
       description: |-
         A Timestamp represents a point in time independent of any time zone or local
@@ -266,6 +335,7 @@ components:
         quantity:
           type: integer
           title: quantity
+          minimum: 0
           format: int32
           nullable: true
       title: UpdateItemRequest
@@ -274,63 +344,6 @@ components:
       type: object
       title: UpdateItemResponse
       additionalProperties: false
-    connect-protocol-version:
-      type: number
-      title: Connect-Protocol-Version
-      enum:
-        - 1
-      description: Define the version of the Connect protocol
-      const: 1
-    connect-timeout-header:
-      type: number
-      title: Connect-Timeout-Ms
-      description: Define the timeout, in ms
-    connect.error:
-      type: object
-      properties:
-        code:
-          type: string
-          examples:
-            - not_found
-          enum:
-            - canceled
-            - unknown
-            - invalid_argument
-            - deadline_exceeded
-            - not_found
-            - already_exists
-            - permission_denied
-            - resource_exhausted
-            - failed_precondition
-            - aborted
-            - out_of_range
-            - unimplemented
-            - internal
-            - unavailable
-            - data_loss
-            - unauthenticated
-          description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
-        message:
-          type: string
-          description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
-        detail:
-          $ref: '#/components/schemas/google.protobuf.Any'
-      title: Connect Error
-      additionalProperties: true
-      description: 'Error type returned by Connect: https://connectrpc.com/docs/go/errors/#http-representation'
-    google.protobuf.Any:
-      type: object
-      properties:
-        type:
-          type: string
-        value:
-          type: string
-          format: binary
-        debug:
-          type: object
-          additionalProperties: true
-      additionalProperties: true
-      description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
     user.v1.BeginPasskeyLoginRequest:
       type: object
       properties:
@@ -347,6 +360,18 @@ components:
           type: string
           title: options_json
       title: BeginPasskeyLoginResponse
+      additionalProperties: false
+    user.v1.BeginPasskeyRegistrationRequest:
+      type: object
+      title: BeginPasskeyRegistrationRequest
+      additionalProperties: false
+    user.v1.BeginPasskeyRegistrationResponse:
+      type: object
+      properties:
+        optionsJson:
+          type: string
+          title: options_json
+      title: BeginPasskeyRegistrationResponse
       additionalProperties: false
     user.v1.FinishPasskeyLoginRequest:
       type: object
@@ -367,6 +392,49 @@ components:
           type: string
           title: token
       title: FinishPasskeyLoginResponse
+      additionalProperties: false
+    user.v1.FinishPasskeyRegistrationRequest:
+      type: object
+      properties:
+        attestation:
+          type: string
+          title: attestation
+      title: FinishPasskeyRegistrationRequest
+      additionalProperties: false
+    user.v1.FinishPasskeyRegistrationResponse:
+      type: object
+      title: FinishPasskeyRegistrationResponse
+      additionalProperties: false
+    user.v1.GetAPIKeyRequest:
+      type: object
+      properties:
+        password:
+          type: string
+          title: password
+        confirmPassword:
+          type: string
+          title: confirm_password
+      title: GetAPIKeyRequest
+      additionalProperties: false
+    user.v1.GetAPIKeyResponse:
+      type: object
+      properties:
+        key:
+          type: string
+          title: key
+      title: GetAPIKeyResponse
+      additionalProperties: false
+    user.v1.GetUserRequest:
+      type: object
+      title: GetUserRequest
+      additionalProperties: false
+    user.v1.GetUserResponse:
+      type: object
+      properties:
+        user:
+          title: user
+          $ref: '#/components/schemas/user.v1.User'
+      title: GetUserResponse
       additionalProperties: false
     user.v1.LoginRequest:
       type: object
@@ -417,61 +485,6 @@ components:
     user.v1.SignUpResponse:
       type: object
       title: SignUpResponse
-      additionalProperties: false
-    user.v1.BeginPasskeyRegistrationRequest:
-      type: object
-      title: BeginPasskeyRegistrationRequest
-      additionalProperties: false
-    user.v1.BeginPasskeyRegistrationResponse:
-      type: object
-      properties:
-        optionsJson:
-          type: string
-          title: options_json
-      title: BeginPasskeyRegistrationResponse
-      additionalProperties: false
-    user.v1.FinishPasskeyRegistrationRequest:
-      type: object
-      properties:
-        attestation:
-          type: string
-          title: attestation
-      title: FinishPasskeyRegistrationRequest
-      additionalProperties: false
-    user.v1.FinishPasskeyRegistrationResponse:
-      type: object
-      title: FinishPasskeyRegistrationResponse
-      additionalProperties: false
-    user.v1.GetAPIKeyRequest:
-      type: object
-      properties:
-        password:
-          type: string
-          title: password
-        confirmPassword:
-          type: string
-          title: confirm_password
-      title: GetAPIKeyRequest
-      additionalProperties: false
-    user.v1.GetAPIKeyResponse:
-      type: object
-      properties:
-        key:
-          type: string
-          title: key
-      title: GetAPIKeyResponse
-      additionalProperties: false
-    user.v1.GetUserRequest:
-      type: object
-      title: GetUserRequest
-      additionalProperties: false
-    user.v1.GetUserResponse:
-      type: object
-      properties:
-        user:
-          title: user
-          $ref: '#/components/schemas/user.v1.User'
-      title: GetUserResponse
       additionalProperties: false
     user.v1.UpdatePasswordRequest:
       type: object
@@ -538,6 +551,76 @@ components:
 security:
   - bearerAuth: []
 paths:
+  /item.v1.ItemService/CreateItem:
+    post:
+      tags:
+        - item.v1.ItemService
+      summary: CreateItem
+      operationId: item.v1.ItemService.CreateItem
+      parameters:
+        - name: Connect-Protocol-Version
+          in: header
+          required: true
+          schema:
+            $ref: '#/components/schemas/connect-protocol-version'
+        - name: Connect-Timeout-Ms
+          in: header
+          schema:
+            $ref: '#/components/schemas/connect-timeout-header'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/item.v1.CreateItemRequest'
+        required: true
+      responses:
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/connect.error'
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/item.v1.CreateItemResponse'
+  /item.v1.ItemService/DeleteItem:
+    post:
+      tags:
+        - item.v1.ItemService
+      summary: DeleteItem
+      operationId: item.v1.ItemService.DeleteItem
+      parameters:
+        - name: Connect-Protocol-Version
+          in: header
+          required: true
+          schema:
+            $ref: '#/components/schemas/connect-protocol-version'
+        - name: Connect-Timeout-Ms
+          in: header
+          schema:
+            $ref: '#/components/schemas/connect-timeout-header'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/item.v1.DeleteItemRequest'
+        required: true
+      responses:
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/connect.error'
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/item.v1.DeleteItemResponse'
   /item.v1.ItemService/GetItem:
     post:
       tags:
@@ -608,41 +691,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/item.v1.GetItemsResponse'
-  /item.v1.ItemService/CreateItem:
-    post:
-      tags:
-        - item.v1.ItemService
-      summary: CreateItem
-      operationId: item.v1.ItemService.CreateItem
-      parameters:
-        - name: Connect-Protocol-Version
-          in: header
-          required: true
-          schema:
-            $ref: '#/components/schemas/connect-protocol-version'
-        - name: Connect-Timeout-Ms
-          in: header
-          schema:
-            $ref: '#/components/schemas/connect-timeout-header'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/item.v1.CreateItemRequest'
-        required: true
-      responses:
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/connect.error'
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/item.v1.CreateItemResponse'
   /item.v1.ItemService/UpdateItem:
     post:
       tags:
@@ -678,146 +726,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/item.v1.UpdateItemResponse'
-  /item.v1.ItemService/DeleteItem:
-    post:
-      tags:
-        - item.v1.ItemService
-      summary: DeleteItem
-      operationId: item.v1.ItemService.DeleteItem
-      parameters:
-        - name: Connect-Protocol-Version
-          in: header
-          required: true
-          schema:
-            $ref: '#/components/schemas/connect-protocol-version'
-        - name: Connect-Timeout-Ms
-          in: header
-          schema:
-            $ref: '#/components/schemas/connect-timeout-header'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/item.v1.DeleteItemRequest'
-        required: true
-      responses:
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/connect.error'
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/item.v1.DeleteItemResponse'
-  /user.v1.AuthService/Login:
-    post:
-      tags:
-        - user.v1.AuthService
-      summary: Login
-      operationId: user.v1.AuthService.Login
-      parameters:
-        - name: Connect-Protocol-Version
-          in: header
-          required: true
-          schema:
-            $ref: '#/components/schemas/connect-protocol-version'
-        - name: Connect-Timeout-Ms
-          in: header
-          schema:
-            $ref: '#/components/schemas/connect-timeout-header'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/user.v1.LoginRequest'
-        required: true
-      responses:
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/connect.error'
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/user.v1.LoginResponse'
-  /user.v1.AuthService/SignUp:
-    post:
-      tags:
-        - user.v1.AuthService
-      summary: SignUp
-      operationId: user.v1.AuthService.SignUp
-      parameters:
-        - name: Connect-Protocol-Version
-          in: header
-          required: true
-          schema:
-            $ref: '#/components/schemas/connect-protocol-version'
-        - name: Connect-Timeout-Ms
-          in: header
-          schema:
-            $ref: '#/components/schemas/connect-timeout-header'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/user.v1.SignUpRequest'
-        required: true
-      responses:
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/connect.error'
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/user.v1.SignUpResponse'
-  /user.v1.AuthService/Logout:
-    post:
-      tags:
-        - user.v1.AuthService
-      summary: Logout
-      operationId: user.v1.AuthService.Logout
-      parameters:
-        - name: Connect-Protocol-Version
-          in: header
-          required: true
-          schema:
-            $ref: '#/components/schemas/connect-protocol-version'
-        - name: Connect-Timeout-Ms
-          in: header
-          schema:
-            $ref: '#/components/schemas/connect-timeout-header'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/user.v1.LogoutRequest'
-        required: true
-      responses:
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/connect.error'
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/user.v1.LogoutResponse'
   /user.v1.AuthService/BeginPasskeyLogin:
     post:
       tags:
@@ -888,12 +796,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/user.v1.FinishPasskeyLoginResponse'
-  /user.v1.UserService/GetUser:
+  /user.v1.AuthService/Login:
     post:
       tags:
-        - user.v1.UserService
-      summary: GetUser
-      operationId: user.v1.UserService.GetUser
+        - user.v1.AuthService
+      summary: Login
+      operationId: user.v1.AuthService.Login
       parameters:
         - name: Connect-Protocol-Version
           in: header
@@ -908,7 +816,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/user.v1.GetUserRequest'
+              $ref: '#/components/schemas/user.v1.LoginRequest'
         required: true
       responses:
         default:
@@ -922,13 +830,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user.v1.GetUserResponse'
-  /user.v1.UserService/UpdatePassword:
+                $ref: '#/components/schemas/user.v1.LoginResponse'
+  /user.v1.AuthService/Logout:
     post:
       tags:
-        - user.v1.UserService
-      summary: UpdatePassword
-      operationId: user.v1.UserService.UpdatePassword
+        - user.v1.AuthService
+      summary: Logout
+      operationId: user.v1.AuthService.Logout
       parameters:
         - name: Connect-Protocol-Version
           in: header
@@ -943,7 +851,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/user.v1.UpdatePasswordRequest'
+              $ref: '#/components/schemas/user.v1.LogoutRequest'
         required: true
       responses:
         default:
@@ -957,13 +865,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user.v1.UpdatePasswordResponse'
-  /user.v1.UserService/GetAPIKey:
+                $ref: '#/components/schemas/user.v1.LogoutResponse'
+  /user.v1.AuthService/SignUp:
     post:
       tags:
-        - user.v1.UserService
-      summary: GetAPIKey
-      operationId: user.v1.UserService.GetAPIKey
+        - user.v1.AuthService
+      summary: SignUp
+      operationId: user.v1.AuthService.SignUp
       parameters:
         - name: Connect-Protocol-Version
           in: header
@@ -978,7 +886,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/user.v1.GetAPIKeyRequest'
+              $ref: '#/components/schemas/user.v1.SignUpRequest'
         required: true
       responses:
         default:
@@ -992,42 +900,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user.v1.GetAPIKeyResponse'
-  /user.v1.UserService/UpdateProfilePicture:
-    post:
-      tags:
-        - user.v1.UserService
-      summary: UpdateProfilePicture
-      operationId: user.v1.UserService.UpdateProfilePicture
-      parameters:
-        - name: Connect-Protocol-Version
-          in: header
-          required: true
-          schema:
-            $ref: '#/components/schemas/connect-protocol-version'
-        - name: Connect-Timeout-Ms
-          in: header
-          schema:
-            $ref: '#/components/schemas/connect-timeout-header'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/user.v1.UpdateProfilePictureRequest'
-        required: true
-      responses:
-        default:
-          description: Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/connect.error'
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/user.v1.UpdateProfilePictureResponse'
+                $ref: '#/components/schemas/user.v1.SignUpResponse'
   /user.v1.UserService/BeginPasskeyRegistration:
     post:
       tags:
@@ -1098,6 +971,146 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/user.v1.FinishPasskeyRegistrationResponse'
+  /user.v1.UserService/GetAPIKey:
+    post:
+      tags:
+        - user.v1.UserService
+      summary: GetAPIKey
+      operationId: user.v1.UserService.GetAPIKey
+      parameters:
+        - name: Connect-Protocol-Version
+          in: header
+          required: true
+          schema:
+            $ref: '#/components/schemas/connect-protocol-version'
+        - name: Connect-Timeout-Ms
+          in: header
+          schema:
+            $ref: '#/components/schemas/connect-timeout-header'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user.v1.GetAPIKeyRequest'
+        required: true
+      responses:
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/connect.error'
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user.v1.GetAPIKeyResponse'
+  /user.v1.UserService/GetUser:
+    post:
+      tags:
+        - user.v1.UserService
+      summary: GetUser
+      operationId: user.v1.UserService.GetUser
+      parameters:
+        - name: Connect-Protocol-Version
+          in: header
+          required: true
+          schema:
+            $ref: '#/components/schemas/connect-protocol-version'
+        - name: Connect-Timeout-Ms
+          in: header
+          schema:
+            $ref: '#/components/schemas/connect-timeout-header'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user.v1.GetUserRequest'
+        required: true
+      responses:
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/connect.error'
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user.v1.GetUserResponse'
+  /user.v1.UserService/UpdatePassword:
+    post:
+      tags:
+        - user.v1.UserService
+      summary: UpdatePassword
+      operationId: user.v1.UserService.UpdatePassword
+      parameters:
+        - name: Connect-Protocol-Version
+          in: header
+          required: true
+          schema:
+            $ref: '#/components/schemas/connect-protocol-version'
+        - name: Connect-Timeout-Ms
+          in: header
+          schema:
+            $ref: '#/components/schemas/connect-timeout-header'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user.v1.UpdatePasswordRequest'
+        required: true
+      responses:
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/connect.error'
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user.v1.UpdatePasswordResponse'
+  /user.v1.UserService/UpdateProfilePicture:
+    post:
+      tags:
+        - user.v1.UserService
+      summary: UpdateProfilePicture
+      operationId: user.v1.UserService.UpdateProfilePicture
+      parameters:
+        - name: Connect-Protocol-Version
+          in: header
+          required: true
+          schema:
+            $ref: '#/components/schemas/connect-protocol-version'
+        - name: Connect-Timeout-Ms
+          in: header
+          schema:
+            $ref: '#/components/schemas/connect-timeout-header'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user.v1.UpdateProfilePictureRequest'
+        required: true
+      responses:
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/connect.error'
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user.v1.UpdateProfilePictureResponse'
 tags:
   - name: item.v1.ItemService
   - name: user.v1.AuthService
